@@ -2,11 +2,9 @@
 	import type { PageData } from './$types';
 
 	export let data: PageData;
-  console.log(data)
 
-  let games = data
+  let games = data.games
 
-  console.log(games.games)
 </script>
 
 
@@ -18,11 +16,19 @@
 <h6 class="h6">Test h6</h6>
 
 
-<section class="grid gird-cols-2 md:grid-cols-3 gap-4">
-  {#each games.games as game (game.title)}
+<main class="flex justify-center p-4">
+
+
+  <section id="gameImageGallery" class="grid grid-cols-2 md:grid-cols-4 gap-8">
+    {#each games as game (game.title)}
     <div class="flex flex-col">
-      <img class="h-auto max-w-full rounded-lg" src={game.image.asset.url} alt={`Thumbnail for ${game.title}`} />
+      <!-- <a href={game.slug.current}> -->
+      <a href={`swagbucks/${game.slug.current}`}>
+        <img class="h-auto md:w-56 max-w-full rounded-lg" src={game.image.asset.url} alt={`Thumbnail for ${game.title}`} />
+      </a>
       <h3 class="h3 text-center">{game.title}</h3>
     </div>
-  {/each}
-</section>
+    {/each}
+  </section>
+
+</main>
