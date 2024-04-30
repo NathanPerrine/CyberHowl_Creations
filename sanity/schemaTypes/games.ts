@@ -12,6 +12,7 @@ export const games = defineType({
         .required()
         .error('Name of game is required.')
     }),
+
     defineField({
       type: 'slug',
       name: 'slug',
@@ -21,8 +22,29 @@ export const games = defineType({
           .toLowerCase()
           .replace(/\s+/g, '-')
           .slice(0, 200)
+      },
+      validation: rule => rule
+        .required()
+        .error('Must generate a slug for navigation.')
+    }),
+
+    defineField({
+      type: 'string',
+      name: 'developer',
+      title: 'Developer',
+      description: 'Game Developer',
+    }),
+
+    defineField({
+      type: 'date',
+      name: 'datePlayed',
+      title: 'Date Played',
+      description: 'Month the offer was started',
+      options: {
+        dateFormat: 'YYYY-MM'
       }
     }),
+
     defineField({
       type: 'image',
       name: 'image',
@@ -30,6 +52,20 @@ export const games = defineType({
       validation: rule => rule
         .required().assetRequired()
         .error('Must have an image to display.')
-    })
+    }),
+
+    defineField({
+      name: 'tags',
+      title: 'Tags',
+      description: 'Game descriptions',
+      type:'array',
+      of: [
+        {
+          name:'tag',
+          title:'Tag',
+          type:'string'
+        }
+      ]
+    }),
   ],
 });
