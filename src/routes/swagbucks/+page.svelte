@@ -4,6 +4,7 @@
 	export let data: PageData;
 
   let games = data.games
+  console.log(games)
 
 </script>
 

@@ -14,7 +14,8 @@ export async function load({ params }) {
       asset -> {
         url
       }
-    }
+    },
+    content,
   }`)
 
   if (data) {

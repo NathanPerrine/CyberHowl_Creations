@@ -31,7 +31,6 @@ export const games = defineType({
     defineField({
       type: 'string',
       name: 'developer',
-      title: 'Developer',
       description: 'Game Developer',
     }),
 
@@ -43,6 +42,14 @@ export const games = defineType({
       options: {
         dateFormat: 'YYYY-MM'
       }
+    }),
+
+    defineField({
+      type: 'string',
+      name: 'device',
+      description: 'Type of device this offer was played on. Android, PC, iPhone, iPad',
+      validation: rule => rule
+        .required()
     }),
 
     defineField({
@@ -66,6 +73,13 @@ export const games = defineType({
           type:'string'
         }
       ]
+    }),
+
+    defineField({
+      name: 'content',
+      title: 'Content',
+      type: 'array',
+      of: [{type: 'block'}]
     }),
   ],
 });
