@@ -6,7 +6,12 @@ export const load = (async ({ params }) => {
 
   const data = await client.fetch(`*[_type == "games" && slug.current == "${params.slug}"] {
     title,
-    slug,
+    developer,
+    datePlayed,
+    device,
+    tags,
+    fullOffer,
+    earned,
     image {
       asset -> {
         url
