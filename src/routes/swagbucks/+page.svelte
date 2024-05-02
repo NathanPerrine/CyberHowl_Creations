@@ -6,6 +6,7 @@
   let games = data.games
   console.log(games)
 
+
 </script>
 
 

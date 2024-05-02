@@ -76,10 +76,33 @@ export const games = defineType({
     }),
 
     defineField({
+      name: 'fullOffer',
+      title: 'Full Offer',
+      description: 'Total SB offered',
+      type: 'number',
+      validation: rule => rule
+        .required()
+        .error('Please enter the full amount offered through Swagbucks')
+    }),
+
+    defineField({
+      name: 'earned',
+      title: 'Total SB Earned',
+      description: 'Total SB earned',
+      type: 'number',
+      validation: rule => rule
+        .required()
+        .error('Please enter the full amount of Swagbucks earned.')
+    }),
+
+    defineField({
       name: 'content',
       title: 'Content',
       type: 'array',
-      of: [{type: 'block'}]
+      of: [
+        {type: 'block'},
+        {type: 'image'},
+      ]
     }),
   ],
 });
