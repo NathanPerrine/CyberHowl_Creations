@@ -39,8 +39,8 @@
         <!-- Developer -->
         <h3 class="h3">{game.developer}</h3>
         <!-- Offer -->
-        <section>
-          <p>{game.earned} / {game.fullOffer}</p>
+        <section class="p-2">
+          <p class="text-center">{game.earned} / {game.fullOffer}</p>
           <ProgressBar meter="bg-primary-500" track="bg-primary-500/30" value={game.earned} max={game.fullOffer} />
         </section>
       </section>

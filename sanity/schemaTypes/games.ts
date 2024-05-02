@@ -72,7 +72,12 @@ export const games = defineType({
           title:'Tag',
           type:'string'
         }
-      ]
+      ],
+      options: {
+        layout: 'tags'
+      },
+      validation: rule => rule
+        .unique()
     }),
 
     defineField({
@@ -93,6 +98,16 @@ export const games = defineType({
       validation: rule => rule
         .required()
         .error('Please enter the full amount of Swagbucks earned.')
+    }),
+
+    defineField({
+      name: 'milestones',
+      title: 'Milestones',
+      description: 'Various milestones for earning SB, e.g. Install, Reach level x',
+      type: 'array',
+      of: [
+
+      ]
     }),
 
     defineField({
