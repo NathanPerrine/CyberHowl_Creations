@@ -1,20 +1,40 @@
 import { defineField, defineType } from 'sanity'
 import { BookIcon} from '@sanity/icons'
 
-export const milestonesType = defineType({
-  name: 'milestones',
-  title: 'Milestones',
+export const milestoneType = defineType({
+  name: 'milestone',
+  title: 'Milestone',
   type: 'object',
   fields: [
     defineField({
       name: 'milestone',
       title: 'Milestone',
-      type: 'string'
+      type: 'string',
+      validation: rule => rule
+        .required()
+        .error('What is the requirement for this milestone? e.g. Install, Reach level x.')
+    }),
+    defineField({
+      name: 'reward',
+      title: 'Reward',
+      description: 'Reward offered',
+      type: 'number',
+      validation: rule => rule
+        .required()
+        .error('What is the reward for completing this milestone?')
     }),
     defineField({
       name: 'completed',
       type: 'boolean',
       initialValue: false,
     })
-  ]
+  ],
+  preview: {
+    select: {
+      title: 'milestone',
+    },
+    prepare: ({title}) => ({
+      title
+    })
+  }
 })

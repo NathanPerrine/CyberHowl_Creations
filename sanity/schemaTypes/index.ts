@@ -1,4 +1,4 @@
-import { category } from "./category";
 import { games } from "./games";
+import { milestoneType } from "./milestones";
 
-export const schemaTypes = [category, games];
+export const schemaTypes = [milestoneType, games];

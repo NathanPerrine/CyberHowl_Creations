@@ -1,5 +1,12 @@
 import { defineType, defineField, defineArrayMember } from 'sanity'
 
+type Milestone = {
+  _key?: string
+  milestone?: string
+  offer?: number
+  completed?: boolean
+}
+
 export const games = defineType({
   type: 'document',
   name: 'games',
@@ -101,13 +108,14 @@ export const games = defineType({
     }),
 
     defineField({
-      name: 'milestones',
-      title: 'Milestones',
+      name: 'milestoneList',
+      title: 'Milestone list',
       description: 'Various milestones for earning SB, e.g. Install, Reach level x',
       type: 'array',
-      of: [
-
-      ]
+      of: [{type: 'milestone'}],
+      validation: rule => rule
+        .required()
+        .error('Please enter at least one milestone.')
     }),
 
     defineField({
