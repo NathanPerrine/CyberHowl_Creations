@@ -31,10 +31,14 @@ export const milestoneType = defineType({
   ],
   preview: {
     select: {
-      title: 'milestone',
+      milestone: 'milestone',
+      reward: 'reward',
+      completed: 'completed',
     },
-    prepare: ({title}) => ({
-      title
+    prepare: ({milestone, reward, completed}) => ({
+      milestone: milestone,
+      reward: reward,
+      completed: completed,
     })
   }
 })
