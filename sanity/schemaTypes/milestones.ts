@@ -1,5 +1,5 @@
 import { defineField, defineType } from 'sanity'
-import { BookIcon} from '@sanity/icons'
+import { CheckmarkIcon, CircleIcon} from '@sanity/icons'
 
 export const milestoneType = defineType({
   name: 'milestone',
@@ -25,6 +25,7 @@ export const milestoneType = defineType({
     }),
     defineField({
       name: 'completed',
+      title: 'Completed',
       type: 'boolean',
       initialValue: false,
     })
@@ -36,9 +37,9 @@ export const milestoneType = defineType({
       completed: 'completed',
     },
     prepare: ({milestone, reward, completed}) => ({
-      milestone: milestone,
-      reward: reward,
-      completed: completed,
+      title: milestone,
+      subtitle: reward,
+      media: completed ? CheckmarkIcon : CircleIcon
     })
   }
 })
