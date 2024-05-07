@@ -1,19 +1,14 @@
 import { defineType, defineField, defineArrayMember } from 'sanity'
-
-type Milestone = {
-  _key?: string
-  milestone?: string
-  offer?: number
-  completed?: boolean
-}
+import { Milestone } from './milestones'
 
 export const games = defineType({
-  type: 'document',
   name: 'games',
+  type: 'document',
   fields: [
     defineField({
-      type: 'string',
       name: 'title',
+      title: 'Title',
+      type: 'string',
       description: 'Name of the game',
       validation: rule => rule
         .required()
@@ -21,8 +16,9 @@ export const games = defineType({
     }),
 
     defineField({
-      type: 'slug',
       name: 'slug',
+      title: 'Slug',
+      type: 'slug',
       options: {
         source: 'title',
         slugify: input => input
@@ -36,15 +32,25 @@ export const games = defineType({
     }),
 
     defineField({
-      type: 'string',
       name: 'developer',
+      title: 'Developer',
+      type: 'string',
       description: 'Game Developer',
     }),
 
     defineField({
-      type: 'date',
+      name: 'provider',
+      title: 'Provider',
+      type: 'string',
+      validation: rule => rule
+      .required()
+      .error('Please enter the provider this offer was completed through. Swagbucks, Freecash, etc. ')
+    }),
+
+    defineField({
       name: 'datePlayed',
       title: 'Date Played',
+      type: 'date',
       description: 'Month the offer was started',
       options: {
         dateFormat: 'YYYY-MM'
@@ -52,16 +58,18 @@ export const games = defineType({
     }),
 
     defineField({
-      type: 'string',
       name: 'device',
+      title: 'Device',
+      type: 'string',
       description: 'Type of device this offer was played on. Android, PC, iPhone, iPad',
       validation: rule => rule
         .required()
     }),
 
     defineField({
-      type: 'image',
       name: 'image',
+      title: 'Image',
+      type: 'image',
       description: 'Thumbnail of the game.',
       validation: rule => rule
         .required().assetRequired()

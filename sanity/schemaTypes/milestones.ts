@@ -1,5 +1,13 @@
 import { defineField, defineType } from 'sanity'
 import { CheckmarkIcon, CircleIcon} from '@sanity/icons'
+import { MilestoneItem } from './milestoneItem'
+
+export type Milestone = {
+  _key: string
+  milestone?: string
+  offer?: number
+  completed?: boolean
+}
 
 export const milestoneType = defineType({
   name: 'milestone',
@@ -14,6 +22,7 @@ export const milestoneType = defineType({
         .required()
         .error('What is the requirement for this milestone? e.g. Install, Reach level x.')
     }),
+
     defineField({
       name: 'reward',
       title: 'Reward',
@@ -23,6 +32,29 @@ export const milestoneType = defineType({
         .required()
         .error('What is the reward for completing this milestone?')
     }),
+
+    defineField({
+      name: 'rewardType',
+      title: 'Reward Type',
+      type: 'array',
+      of: [{ type: 'string'}],
+      options: {
+        list: [
+          { value: 'SB', title: 'Swagbucks'},
+          { value: '$', title: 'Dollars'},
+        ]
+      },
+      // value: ({ parent }) => parent.provider,
+      validation: rule => [
+        rule
+          .required()
+          .error('What is the reward? Dollars ($), Swagbucks (SB), etc.'),
+        rule
+          .max(1)
+          .error('Only select one reward type.')
+      ]
+    }),
+
     defineField({
       name: 'completed',
       title: 'Completed',
@@ -30,16 +62,20 @@ export const milestoneType = defineType({
       initialValue: false,
     })
   ],
+
   preview: {
     select: {
       milestone: 'milestone',
       reward: 'reward',
+      rewardType: 'rewardType',
       completed: 'completed',
     },
-    prepare: ({milestone, reward, completed}) => ({
+
+    prepare: ({milestone, reward, rewardType, completed}) => ({
       title: milestone,
-      subtitle: reward,
+      subtitle: rewardType == '$' ? `${rewardType}${reward}` : `${reward} ${rewardType}`,
       media: completed ? CheckmarkIcon : CircleIcon
     })
-  }
+  },
+  components: {item: MilestoneItem}
 })
