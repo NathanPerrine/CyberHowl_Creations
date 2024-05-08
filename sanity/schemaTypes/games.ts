@@ -67,6 +67,25 @@ export const games = defineType({
     }),
 
     defineField({
+      name: 'availableOn',
+      title: 'Available On',
+      description: 'What platforms can this offer be completed on?',
+      type: 'array',
+      of: [{ type: 'string'}],
+      options: {
+        list: [
+          { value: 'android', title: 'Android' },
+          { value: 'ipad', title: 'iPad' },
+          { value: 'iphone', title: 'iPhone'},
+          { value: 'pc', title: 'PC' },
+        ]
+      },
+      validation: rule => rule
+        .required()
+        .error('What platforms are available for this offer?')
+    }),
+
+    defineField({
       name: 'image',
       title: 'Image',
       type: 'image',
@@ -79,7 +98,7 @@ export const games = defineType({
     defineField({
       name: 'tags',
       title: 'Tags',
-      description: 'Game descriptions',
+      description: 'Game descriptions, taken from the store page if available.',
       type:'array',
       of: [
         {
@@ -134,6 +153,21 @@ export const games = defineType({
         {type: 'block'},
         {type: 'image'},
       ]
+    }),
+
+    defineField({
+      name: 'nonReferralURL',
+      title: 'Non-referral URL',
+      type: 'url',
+      validation: rule => rule
+        .required()
+        .error('Please add the URL to the offer page.')
+    }),
+
+    defineField({
+      name: 'referralURL',
+      title: 'Referral URL',
+      type: 'url',
     }),
   ],
 });

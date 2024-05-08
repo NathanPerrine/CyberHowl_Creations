@@ -44,7 +44,6 @@ export const milestoneType = defineType({
           { value: '$', title: 'Dollars'},
         ]
       },
-      // value: ({ parent }) => parent.provider,
       validation: rule => [
         rule
           .required()
