@@ -1,5 +1,4 @@
-import { defineType, defineField, defineArrayMember } from 'sanity'
-import { Milestone } from './milestones'
+import { defineType, defineField } from 'sanity'
 
 export const games = defineType({
   name: 'games',
