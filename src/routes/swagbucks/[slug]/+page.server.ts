@@ -1,35 +1,96 @@
 import type { PageServerLoad } from './$types';
 import { client } from '$lib/utils/sanity/client';
+import { z } from 'zod';
+import { error } from '@sveltejs/kit';
+
+const MilestoneItem = z.object({
+  _key: z.string(),
+  reward: z.number(),
+  milestone: z.string(),
+  rewardType: z.array(z.enum(['SB', '$'])),
+  _type: z.string(),
+  completed: z.boolean()
+}).transform((milestone) => ({
+  ...milestone,
+  rewardType: milestone.rewardType[0],
+}))
+
+const ImageObj = z.object({
+  asset: z.object({url: z.string()})
+})
+
+const ContentChild = z.object({
+  _type: z.string(),
+  marks: z.array(z.string()).default([]),
+  text: z.string(),
+  _key: z.string(),
+})
+
+const ContentObj = z.object({
+  _type: z.string(),
+  style: z.string(),
+  markDefs: z.array(z.string()).default([]),
+  _key: z.string(),
+  children: z.array(ContentChild)
+})
+
+const GameResult = z.object({
+  title: z.string(),
+  developer: z.string(),
+  provider: z.string(),
+  datePlayed: z.string().date(),
+  device: z.string(),
+  availableOn: z.array(z.enum(['android', 'ipad', 'iphone', 'pc'])),
+  tags: z.array(z.string()),
+  fullOffer: z.number(),
+  earned: z.number(),
+  milestoneList: z.array(MilestoneItem),
+  image: ImageObj,
+  content: z.array(ContentObj),
+  nonReferralURL: z.string().url(),
+  referralURL: z.string().url(),
+})
+
+const GameData = z.array(GameResult)
 
 export const load = (async ({ params }) => {
-  console.log(params.slug)
+  // console.log(params.slug)
+
+  const query = `*[_type == "games" && slug.current == "1"] {
+    title
+  }`
 
   const data = await client.fetch(`*[_type == "games" && slug.current == "${params.slug}"] {
     title,
     developer,
+    provider,
     datePlayed,
     device,
+    availableOn,
     tags,
     fullOffer,
     earned,
+    milestoneList,
     image {
       asset -> {
         url
       }
     },
     content,
+    nonReferralURL,
+    referralURL,
   }`)
 
-  if (data) {
-    return {
-      game: data
-    };
+  if (!data[0]){
+    error(404, {
+      message: 'Game Not Found'
+    })
   }
 
-  return {
-    status: 500,
-    body: new Error("Internal Server Error")
-  };
+  const parsedData = GameResult.parse(data[0])
+  // console.log(parsedData.milestoneList[0])
 
-    return {};
+  return {
+    game: parsedData
+  };
 }) satisfies PageServerLoad;

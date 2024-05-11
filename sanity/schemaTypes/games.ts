@@ -50,7 +50,7 @@ export const games = defineType({
       name: 'datePlayed',
       title: 'Date Played',
       type: 'date',
-      description: 'Month the offer was started',
+      description: 'Month the offer was started. YYYY-MM',
       options: {
         dateFormat: 'YYYY-MM'
       }

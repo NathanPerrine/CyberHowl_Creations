@@ -4,17 +4,8 @@
     import { ProgressBar } from '@skeletonlabs/skeleton'
 
     export let data: PageData;
-    let game = data.game[0]
-    // game.title
-    // game.content
-    // game.datePlayed
-    // game.developer
-    // game.device
-    // game.earned
-    // game.fullOffer
-    // game.tags
-
-    console.log(game)
+    let game = data.game
+    console.log(game.milestoneList)
 </script>
 
 <svelte:head>

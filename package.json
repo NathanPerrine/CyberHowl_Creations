@@ -43,6 +43,7 @@
   "dependencies": {
     "@floating-ui/dom": "1.6.3",
     "@sanity/client": "^6.15.20",
-    "highlight.js": "11.9.0"
+    "highlight.js": "11.9.0",
+    "zod": "^3.23.8"
   }
 }
