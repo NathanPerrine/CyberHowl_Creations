@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
+import { error } from '@sveltejs/kit';
 import { client } from '$lib/utils/sanity/client';
 import { z } from 'zod';
-import { error } from '@sveltejs/kit';
 
 const MilestoneItem = z.object({
   _key: z.string(),
@@ -15,8 +15,8 @@ const MilestoneItem = z.object({
   rewardType: milestone.rewardType[0],
 }))
 
-const ImageObj = z.object({
-  asset: z.object({url: z.string()})
+const ImageZObj = z.object({
+  asset: z.object( {url: z.string() })
 })
 
 const ContentChild = z.object({
@@ -45,7 +45,7 @@ const GameResult = z.object({
   fullOffer: z.number(),
   earned: z.number(),
   milestoneList: z.array(MilestoneItem),
-  image: ImageObj,
+  image: ImageZObj,
   content: z.array(ContentObj),
   nonReferralURL: z.string().url(),
   referralURL: z.string().url(),
@@ -54,11 +54,6 @@ const GameResult = z.object({
 const GameData = z.array(GameResult)
 
 export const load = (async ({ params }) => {
-  // console.log(params.slug)
-
-  const query = `*[_type == "games" && slug.current == "1"] {
-    title
-  }`
 
   const data = await client.fetch(`*[_type == "games" && slug.current == "${params.slug}"] {
     title,
