@@ -83,8 +83,6 @@ export const load = (async ({ params }) => {
   }
 
   const parsedData = GameResult.parse(data[0])
-  // console.log(parsedData.milestoneList[0])
-
   return {
     game: parsedData
   };
