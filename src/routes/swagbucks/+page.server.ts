@@ -17,6 +17,7 @@ const GamesResult = z.object({
   image: ImageZObj,
   provider: z.string(),
   tags: z.array(z.string()),
+  fullOffer: z.number(),
 })
 
 const GamesResults = z.array(GamesResult)
@@ -34,6 +35,7 @@ export const load = (async ({ params }) => {
     },
     provider,
     tags,
+    fullOffer,
   }`)
 
   if (!data[0]) {

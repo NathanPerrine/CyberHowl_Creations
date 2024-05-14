@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+  import { writable, derived } from 'svelte/store';
 
 	export let data: PageData;
 
@@ -13,11 +14,33 @@
       providers.push(game.provider)
     }
   })
-  let selectedProvider = ''
-  $:console.log(selectedProvider)
 
-  console.log(providers)
-  let filteredGames = [...games]
+  let maxOffer: number = games.reduce((acc, value) => {
+    return (acc = acc > value.fullOffer ? acc : value.fullOffer);
+  }, 0)
+
+  // Filters
+  const providerFilter = writable('')
+  const offerFilter    = writable(0)
+  const deviceFilter   = writable('')
+  const nameFilter     = writable('')
+
+  $: console.log($offerFilter)
+
+  const filteredGames = derived(
+    [providerFilter, offerFilter, deviceFilter, nameFilter],
+    ([$provider, $offerAmount, $device, $name]) => {
+      return games.filter(game => {
+        return (
+          (game.provider.includes($provider)) &&
+          (game.fullOffer >= $offerAmount) &&
+          (game.title.toLowerCase().includes($name.toLowerCase()))
+        )
+      })
+    }
+  )
+
+
 </script>
 
 
@@ -33,25 +56,40 @@
 
   <section id="filters" class="max-w-7xl w-full py-4">
     <!-- Filter Title -->
-    <h4 class="h4">Filter</h4>
+    <h4 class="h4 text-center">Filters</h4>
 
-    <!-- Providers section-->
+    <!-- Filters -->
     <section>
-      <h5 class="h5">Provider</h5>
-      <select class="select max-w-32" bind:value={selectedProvider} >
-        <option value="all" selected>All</option>
-        {#each providers as provider (provider)}
-        <option value={provider}>{provider}</option>
-        {/each}
-      </select>
+      <!-- Providers Filter-->
+      <section>
+        <label class="label" for="provider">
+          <span>Provider</span>
+          <select class="select max-w-32" name="provider" bind:value={$providerFilter} >
+            <option value="" selected>All</option>
+            {#each providers as provider (provider)}
+            <option value={provider}>{provider}</option>
+            {/each}
+          </select>
+        </label>
+      </section>
+
+      <!-- Name Filter -->
+      <section>
+        <label class="label">
+          <span>Name</span>
+          <input class="input" type="text" bind:value={$nameFilter} placeholder="Name" />
+        </label>
+      </section>
+
+      <!-- Offer Filter -->
+      <input type="range" bind:value={$offerFilter} step="100" max={maxOffer} />
+
     </section>
-
-
   </section>
 
 
   <section id="gameGrid" class="max-w-7xl grid grid-cols-2 md:grid-cols-4 gap-8">
-    {#each filteredGames as game (game.title)}
+    {#each $filteredGames as game (game.title)}
     <div class="flex flex-col items-center max-w-56">
       <!-- <a href={game.slug.current}> -->
       <a href={`swagbucks/${game.slug.current}`}>
