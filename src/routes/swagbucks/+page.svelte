@@ -1,9 +1,54 @@
 <script lang="ts">
 	import type { PageData } from './$types';
   import { writable, derived } from 'svelte/store';
+  import { flip } from 'svelte/animate';
+  import { fade } from 'svelte/transition';
+
+  const DEFAULT_DURATION = 500;
 
 	export let data: PageData;
   let games = data.games
+
+  // Filters
+  const providerFilter = writable<string>('')
+  const offerFilter    = writable<number>(0)
+  const deviceFilter   = writable<string>('')
+  const nameFilter     = writable<string>('')
+  const tagsFilter     = writable<string[]>([])
+  const displayTags   = writable<Record<string, boolean>>({})
+
+  const filteredGames = derived(
+    [providerFilter, offerFilter, deviceFilter, nameFilter, tagsFilter],
+    ([$provider, $offerAmount, $device, $name, $tag]) => {
+
+      // Filters the game offers into the 'filtered' variable using the various provided filters
+      let filtered = games.filter(game => {
+        return (
+          (game.provider.includes($provider)) &&
+          (game.fullOffer >= $offerAmount) &&
+          (game.title.toLowerCase().includes($name.toLowerCase())) &&
+          ($tag.length === 0 || $tag.every(tag => game.tags.includes(tag)))
+        )
+      })
+
+      // Uses the previously fitered game offerings to filter the displayed tags
+      let currentTags: Record<string, boolean> = {}
+      filtered.forEach((game) => {
+        game.tags.forEach((tag) => {
+          if (!(tag in currentTags)) {
+            if ($tagsFilter.includes(tag)) {
+              currentTags[tag] = true
+            } else {
+              currentTags[tag] = false
+            }
+          }
+        })
+      })
+      $displayTags = currentTags
+
+      return filtered
+    }
+  )
 
   console.log(games)
 
@@ -11,7 +56,7 @@
   let tags: Record<string, boolean> = {}
 
   // Generate list of tags & providers
-  games.forEach((game) => {
+  $filteredGames.forEach((game) => {
     if (!providers.includes(game.provider)){
       providers.push(game.provider)
     }
@@ -23,7 +68,6 @@
   })
 
   function toggleTag(tag: string): void {
-    tags[tag] = !tags[tag]
     if ($tagsFilter.includes(tag)) {
       const index = $tagsFilter.indexOf(tag)
       $tagsFilter.splice(index, 1)
@@ -37,42 +81,23 @@
     return (acc = acc > value.fullOffer ? acc : value.fullOffer);
   }, 0)
 
-  // Filters
-  const providerFilter = writable<string>('')
-  const offerFilter    = writable<number>(0)
-  const deviceFilter   = writable<string>('')
-  const nameFilter     = writable<string>('')
-  const tagsFilter     = writable<string[]>([])
 
-  const filteredGames = derived(
-    [providerFilter, offerFilter, deviceFilter, nameFilter, tagsFilter],
-    ([$provider, $offerAmount, $device, $name, $tag]) => {
-      return games.filter(game => {
-        return (
-          (game.provider.includes($provider)) &&
-          (game.fullOffer >= $offerAmount) &&
-          (game.title.toLowerCase().includes($name.toLowerCase())) &&
-          ($tag.length === 0 || $tag.some(tag => game.tags.includes(tag)))
-        )
-      })
-    }
-  )
 
 // TODO
 // filters
   // Tags
-    // set only available based on remaining games
-    // transitions?
-  // add device available on filter
-  // max height for tags div, scrollable
-  // labels for offer total ($min, $max)
-  // mobile styling
+    // [ ] set only available based on remaining games
+    // [ ] transitions?
+  // [ ] add device available on filter
+  // [ ] max height for tags div, scrollable
+  // [ ] labels for offer total ($min, $max)
+  // [ ] mobile styling
 //
 // Games
-  // Create normal cards?
-  // transitions for filtered games
-  // device icons on cards
-  // Flip with info on back?
+  // [ ] Create normal cards?
+  // [x] transitions for filtered games
+  // [ ] device icons on cards
+  // [ ] Flip with info on back?
 
 
 </script>
@@ -128,24 +153,26 @@
       </div>
       <!-- Tags filter -->
       <div class="w-1/2 flex flex-wrap">
-        {#each Object.keys(tags) as tag}
-          <button class="chip h-8 m-2 {tags[tag] ? 'variant-filled' : 'variant-soft'}"
+        {#each Object.keys($displayTags) as tag (tag)}
+          <button class="chip h-8 m-2 {$displayTags[tag] ? 'variant-filled' : 'variant-soft'}"
             on:click={() => { toggleTag(tag) }}
+            animate:flip="{{ duration: DEFAULT_DURATION }}"
           >
             {tag}
           </button>
         {/each}
       </div>
-
-
     </div>
     </section>
 
 
     <section id="gameGrid" class="max-w-7xl grid grid-cols-2 md:grid-cols-4 gap-8">
       {#each $filteredGames as game (game.title)}
-      <div class="flex flex-col items-center max-w-56">
-        <!-- <a href={game.slug.current}> -->
+      <div class="flex flex-col items-center max-w-56"
+        animate:flip="{{ duration: DEFAULT_DURATION }}"
+        in:fade="{{ delay: 100, duration: 500 }}"
+        out:fade={{ duration: 100 }}
+      >
           <a href={`swagbucks/${game.slug.current}`}>
             <img class="h-auto md:w-56 max-w-full rounded-lg" src={game.image.asset.url} alt={`Thumbnail for ${game.title}`} />
       </a>
