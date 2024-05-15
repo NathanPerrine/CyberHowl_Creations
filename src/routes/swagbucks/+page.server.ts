@@ -16,6 +16,7 @@ const GamesResult = z.object({
   slug: Slug,
   image: ImageZObj,
   provider: z.string(),
+  availableOn: z.array(z.enum(['android', 'ios', 'pc'])),
   tags: z.array(z.string()),
   fullOffer: z.number(),
 })
@@ -36,6 +37,7 @@ export const load = (async ({ params }) => {
     provider,
     tags,
     fullOffer,
+    availableOn,
   }`)
 
   if (!data[0]) {

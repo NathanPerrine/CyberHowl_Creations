@@ -74,8 +74,7 @@ export const games = defineType({
       options: {
         list: [
           { value: 'android', title: 'Android' },
-          { value: 'ipad', title: 'iPad' },
-          { value: 'iphone', title: 'iPhone'},
+          { value: 'ios', title: 'iOS' },
           { value: 'pc', title: 'PC' },
         ]
       },

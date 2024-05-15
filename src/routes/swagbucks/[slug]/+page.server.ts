@@ -40,7 +40,7 @@ const GameResult = z.object({
   provider: z.string(),
   datePlayed: z.string().date(),
   device: z.string(),
-  availableOn: z.array(z.enum(['android', 'ipad', 'iphone', 'pc'])),
+  availableOn: z.array(z.enum(['android', 'ios', 'pc'])),
   tags: z.array(z.string()),
   fullOffer: z.number(),
   earned: z.number(),
