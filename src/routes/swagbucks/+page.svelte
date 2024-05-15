@@ -2,9 +2,11 @@
 	import type { PageData } from './$types';
   import { writable, derived } from 'svelte/store';
   import { flip } from 'svelte/animate';
-  import { fade } from 'svelte/transition';
+  import { crossfade } from 'svelte/transition';
+	import { cubicOut } from 'svelte/easing';
 
   const DEFAULT_DURATION = 500;
+  const [send, receive] = crossfade({duration: DEFAULT_DURATION, easing: cubicOut});
 
 	export let data: PageData;
   let games = data.games
@@ -86,9 +88,10 @@
 // TODO
 // filters
   // Tags
-    // [ ] set only available based on remaining games
-    // [ ] transitions?
+    // [x] set only available based on remaining games
+    // [x] transitions?
   // [ ] add device available on filter
+  // [ ] link devices to filter
   // [ ] max height for tags div, scrollable
   // [ ] labels for offer total ($min, $max)
   // [ ] mobile styling
@@ -96,6 +99,8 @@
 // Games
   // [ ] Create normal cards?
   // [x] transitions for filtered games
+    // [x] game flashes to left of screen when switching providers..
+      // doesn't happen when having the proper in/out for flip, can't use fade :(
   // [ ] device icons on cards
   // [ ] Flip with info on back?
 
@@ -118,10 +123,10 @@
     <h4 class="h4 text-center">Filters</h4>
 
     <!-- Filters -->
-    <div class="flex justify-between gap-4">
+    <div class="flex flex-col md:flex-row justify-between gap-4">
 
       <!-- Providers, Name, Offer filters -->
-      <div class="w-1/2">
+      <div class="md:w-1/3">
         <!-- Providers Filter-->
         <div>
           <label class="label" for="provider">
@@ -143,16 +148,51 @@
           </label>
         </div>
 
-        <!-- Offer Filter -->
-        <div>
-          <label class="label">
-            <span>Offer Total</span>
-            <input class="input" type="range" bind:value={$offerFilter} step="100" max={maxOffer} />
-          </label>
+        <!-- Device & Offer Filters -->
+        <div class="flex">
+
+          <!-- Device Filter -->
+          <div class="w-1/3 space-y-2 my-2">
+            <label for="pc" class="flex items-center space-x-2">
+              <input name="pc" class="checkbox" type="checkbox" />
+              <p>PC</p>
+            </label>
+            <label for="android" class="flex items-center space-x-2">
+              <input name="android'" class="checkbox" type="checkbox" />
+              <p>Android</p>
+            </label>
+            <label for="ios" class="flex items-center space-x-2">
+              <input name="ios" class="checkbox" type="checkbox" />
+              <p>iOS</p>
+            </label>
+          </div>
+
+          <!-- Offer Filter -->
+          <div class="w-2/3 relative flex flex-col justify-center items-center">
+            <div class="flex gap-4">
+              <label for="sb" class="flex items-center space-x-2">
+                <input class="radio" type="radio" name="currency" id="sb" value="sb" checked />
+                <p>SB</p>
+              </label>
+              <label for="$" class="flex items-center space-x-2">
+                <input class="radio" type="radio" name="currency" id="$" value="$" />
+                <p>$</p>
+              </label>
+            </div>
+            <label class="label">
+              <span>Offer Total</span>
+              <input class="input" type="range" bind:value={$offerFilter} step="100" max={maxOffer} />
+              <span class="text-sm absolute start-0 bottom-0">0</span>
+              <span class="text-sm absolute end-0 bottom-0">{maxOffer}</span>
+            </label>
+          </div>
+
         </div>
+
       </div>
+
       <!-- Tags filter -->
-      <div class="w-1/2 flex flex-wrap">
+      <div class="md:w-2/3 py-4 h-min flex flex-wrap gap-0">
         {#each Object.keys($displayTags) as tag (tag)}
           <button class="chip h-8 m-2 {$displayTags[tag] ? 'variant-filled' : 'variant-soft'}"
             on:click={() => { toggleTag(tag) }}
@@ -162,6 +202,7 @@
           </button>
         {/each}
       </div>
+
     </div>
     </section>
 
@@ -169,9 +210,9 @@
     <section id="gameGrid" class="max-w-7xl grid grid-cols-2 md:grid-cols-4 gap-8">
       {#each $filteredGames as game (game.title)}
       <div class="flex flex-col items-center max-w-56"
+        in:receive="{{key:game.title}}"
+        out:send="{{key: game.title}}"
         animate:flip="{{ duration: DEFAULT_DURATION }}"
-        in:fade="{{ delay: 100, duration: 500 }}"
-        out:fade={{ duration: 100 }}
       >
           <a href={`swagbucks/${game.slug.current}`}>
             <img class="h-auto md:w-56 max-w-full rounded-lg" src={game.image.asset.url} alt={`Thumbnail for ${game.title}`} />
