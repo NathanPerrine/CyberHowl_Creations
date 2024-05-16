@@ -35,6 +35,9 @@ export const games = defineType({
       title: 'Developer',
       type: 'string',
       description: 'Game Developer',
+      validation: rule => rule
+        .required()
+        .error('Who developed/published this game?')
     }),
 
     defineField({
@@ -53,7 +56,10 @@ export const games = defineType({
       description: 'Month the offer was started. YYYY-MM',
       options: {
         dateFormat: 'YYYY-MM'
-      }
+      },
+      validation: rule => rule
+        .required()
+        .error('When did you start this offer?')
     }),
 
     defineField({
@@ -110,6 +116,8 @@ export const games = defineType({
       },
       validation: rule => rule
         .unique()
+        .required()
+        .error('Please enter at least one tag for filtering.')
     }),
 
     defineField({

@@ -14,20 +14,38 @@
   // Filters
   const providerFilter = writable<string>('')
   const offerFilter    = writable<number>(0)
-  const deviceFilter   = writable<string>('')
+  // const deviceFilter   = writable<string>('')
   const nameFilter     = writable<string>('')
   const tagsFilter     = writable<string[]>([])
+
+  // Device filters
+  const pcFilter       = writable<boolean>(false)
+  const androidFilter  = writable<boolean>(false)
+  const iosFilter      = writable<boolean>(false)
+  const deviceFilter   = derived(
+    [pcFilter, androidFilter, iosFilter],
+    ([$pc, $android, $ios]) => {
+      let devices: ('pc' | 'android' | 'ios')[] = []
+      if ($pc) devices.push('pc')
+      if ($android) devices.push('android')
+      if ($ios) devices.push('ios')
+      return devices;
+    }
+  )
+
   const displayTags   = writable<Record<string, boolean>>({})
 
   const filteredGames = derived(
     [providerFilter, offerFilter, deviceFilter, nameFilter, tagsFilter],
-    ([$provider, $offerAmount, $device, $name, $tag]) => {
+    ([$provider, $offerAmount, $devices, $name, $tag]) => {
 
       // Filters the game offers into the 'filtered' variable using the various provided filters
       let filtered = games.filter(game => {
+        console.log(game.availableOn)
         return (
           (game.provider.includes($provider)) &&
           (game.fullOffer >= $offerAmount) &&
+          ($devices.length === 0 || $devices.some(device => game.availableOn.includes(device))) &&
           (game.title.toLowerCase().includes($name.toLowerCase())) &&
           ($tag.length === 0 || $tag.every(tag => game.tags.includes(tag)))
         )
@@ -95,6 +113,8 @@
   // [ ] max height for tags div, scrollable
   // [ ] labels for offer total ($min, $max)
   // [ ] mobile styling
+  // [ ] timeout on offer sliding?
+  // [ ] set all filters based on available thing remaining
 //
 // Games
   // [ ] Create normal cards?
@@ -103,6 +123,7 @@
       // doesn't happen when having the proper in/out for flip, can't use fade :(
   // [ ] device icons on cards
   // [ ] Flip with info on back?
+  // [ ] cards flip out when nothing filtered
 
 
 </script>
@@ -154,15 +175,15 @@
           <!-- Device Filter -->
           <div class="w-1/3 space-y-2 my-2">
             <label for="pc" class="flex items-center space-x-2">
-              <input name="pc" class="checkbox" type="checkbox" />
+              <input name="pc" class="checkbox" type="checkbox" bind:checked={$pcFilter} />
               <p>PC</p>
             </label>
             <label for="android" class="flex items-center space-x-2">
-              <input name="android'" class="checkbox" type="checkbox" />
+              <input name="android'" class="checkbox" type="checkbox" bind:checked={$androidFilter} />
               <p>Android</p>
             </label>
             <label for="ios" class="flex items-center space-x-2">
-              <input name="ios" class="checkbox" type="checkbox" />
+              <input name="ios" class="checkbox" type="checkbox" bind:checked={$iosFilter} />
               <p>iOS</p>
             </label>
           </div>
@@ -208,18 +229,21 @@
 
 
     <section id="gameGrid" class="max-w-7xl grid grid-cols-2 md:grid-cols-4 gap-8">
+      <!-- {#key $filteredGames} -->
+
       {#each $filteredGames as game (game.title)}
       <div class="flex flex-col items-center max-w-56"
-        in:receive="{{key:game.title}}"
-        out:send="{{key: game.title}}"
-        animate:flip="{{ duration: DEFAULT_DURATION }}"
+      in:receive="{{key:game.title}}"
+      out:send="{{key: game.title}}"
+      animate:flip="{{ duration: DEFAULT_DURATION }}"
       >
-          <a href={`swagbucks/${game.slug.current}`}>
-            <img class="h-auto md:w-56 max-w-full rounded-lg" src={game.image.asset.url} alt={`Thumbnail for ${game.title}`} />
+      <a href={`swagbucks/${game.slug.current}`}>
+        <img class="h-auto md:w-56 max-w-full rounded-lg" src={game.image.asset.url} alt={`Thumbnail for ${game.title}`} />
       </a>
       <h3 class="h3 text-center">{game.title}</h3>
     </div>
     {/each}
+    <!-- {/key} -->
   </section>
 
 </main>

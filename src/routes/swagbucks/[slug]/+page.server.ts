@@ -48,7 +48,7 @@ const GameResult = z.object({
   image: ImageZObj,
   content: z.array(ContentObj),
   nonReferralURL: z.string().url(),
-  referralURL: z.string().url(),
+  referralURL: z.nullable(z.string().url()),
 })
 
 const GameData = z.array(GameResult)
